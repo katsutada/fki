@@ -28,7 +28,11 @@ function logout() {
     location.href = "login.html";
 }
 
-
+function logout() {
+    localStorage.removeItem("isLogin");
+    alert("已登出");
+    location.href = "login.html";
+}
 </script>
 
 
@@ -146,7 +150,9 @@ function logout() {
     </style>
 </head>
 <body>
+
 <button class="floating-button" onclick="scrollToTop()">T O P</button>
+
 <table>
 <tr align="center" valign="middle">
 <td>
@@ -179,6 +185,7 @@ function logout() {
 	<button id="search-50" class="btn1color">Quick</button>
     <button id="search-all" class="btn2color">Full</button>    
     <button id="clear" class="btn3color">Clean</button>
+	<button onclick="logout()" style="padding:5px 10px;">Logout</button>
 </td>
 <tr>
 <td></td><td></td><td></td>
@@ -187,6 +194,7 @@ function logout() {
 </td>
 </tr>
 </table>
+
 <table id="results"></table>
 <script>
     const API_KEY = "AIzaSyCPIdNjv__lM-xSq5oMP4VQggmuMLTXS_0";
