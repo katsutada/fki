@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<title>FKI</title>
-<script src="https://fkinfo.github.io/fki/pw.js"></script>
+    <meta charset="UTF-8">
+    <title>FKI</title>
+	
 <style>
 body { font-family: Arial; margin: 30px; }
 input { padding: 5px; }
@@ -25,33 +25,62 @@ button { padding: 5px 15px; cursor: pointer; }
 		}
 		
 </style>
+
 </head>
 <body>
 
-<input type="password" id="pwInput" placeholder="" style="width:10%; height:5px; padding:6px 10px;">
-<button onclick="login()" class="btn1color">Login</button>
-<p>
-<font color="#AAAAAA">2025.11.27 新增登入及登出功能 密碼7397 </font>
+    <input type="password" id="passwordInput" style="width:10%; height:5px; padding:6px 10px;">
+    <button onclick="login()" class="btn1color">Login</button><br>
+	<font color="#AAAAAA">2025.11.27 新增登入及登出功能 密碼7397</font><br>
+	<p id="message" style="color:#AAAAAA; font-size: 16px;"></p>
 
-<div id="error"></div>
 
-<script>
-function login() {
-    const input = document.getElementById("pwInput").value.trim();
+    <script>
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwWav08RjBMQafbN5sphmYuAcr4SwU9yc9SHUwBdfPyUXnhGDWZlh7qSJCHuOiqz5Px/exec';
 
-    if (input === PASSWORD) {
-        sessionStorage.setItem("isLogin", "1");
-        sessionStorage.setItem("lastActive", Date.now());
-        window.location.href = "fki.html";
-    } else {
-        document.getElementById("error").textContent = "密碼錯誤";
-    }
-}
+        async function login() {
+            const password = document.getElementById('passwordInput').value;
+            const messageElement = document.getElementById('message');
 
-document.body.addEventListener("click", () => {
+            if (!password) {
+                messageElement.textContent = '請輸入密碼！';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('password', password); 
+
+            messageElement.textContent = '驗證中...';
+
+            try {
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    body: formData 
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    messageElement.textContent = '登入成功！正在導向...';
+					sessionStorage.setItem("isLogin", "1");
+					sessionStorage.setItem("lastActive", Date.now());
+                    window.location.href = result.redirect; 
+                } else {
+
+                    messageElement.textContent = result.message || '登入失敗，請檢查密碼。';
+                }
+
+            } catch (error) {
+                console.error('Fetch 錯誤:', error);
+                messageElement.textContent = '連線錯誤，請稍後再試。';
+            }
+        }
+
+
+	document.body.addEventListener("click", () => {
     sessionStorage.setItem("lastActive", Date.now());
-});
-</script>
+	});
+    </script>
 
 </body>
 </html>
