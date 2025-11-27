@@ -1,77 +1,46 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>登入頁面</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
-    <script src="pw.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f9; }
-        .login-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center; }
-        input[type="password"] { padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        #message { color: red; margin-top: 10px; }
-    </style>
+<meta charset="UTF-8">
+<title>Login</title>
+<script src="pw.js"></script>
+<script src="common.js"></script>
 </head>
 <body>
 
-<div class="login-container">
-    <h2>請輸入密碼</h2>
-    <input type="password" id="passwordInput" placeholder="密碼 (例如: 123456)">
-    <button onclick="login()">登入</button>
-    <p id="message"></p>
+<div id="content">
+
+<h2>請輸入密碼：</h2>
+<input type="password" id="pw">
+<button onclick="login()">登入</button>
+
 </div>
 
 <script>
-    const login = async () => {
-        const password = document.getElementById('passwordInput').value;
-        const hashedPassword = sha256(password);
+function login() {
+    const input = document.getElementById("pw").value;
 
-        if (hashedPassword === CORRECT_HASHED_PASSWORD) {
-            // 1. 儲存登入狀態標記
-            localStorage.setItem(LOGIN_STATE_KEY, 'true');
-            localStorage.setItem(TIMEOUT_KEY, Date.now()); // 初始化閒置計時
+    if (input === PASSWORD) {
+        setSession();
+        loadWel();  // 載入 wel.html 內容
+    } else {
+        alert("密碼錯誤");
+    }
+}
 
-            // 2. 改變網址顯示，但不重新載入頁面 (網址不變的關鍵)
-            // 這裡使用 'wel.html' 作為新的狀態 URL，但實際內容是載入的
-            history.pushState(null, '', 'wel.html'); 
+// 動態載入 wel.html（URL 不會改變）
+function loadWel() {
+    fetch("wel.html")
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById("content").innerHTML = html;
+        });
+}
 
-            // 3. 載入 wel.html 的內容並替換當前頁面
-            try {
-                const response = await fetch('wel.html');
-                if (!response.ok) throw new Error('無法載入 wel.html');
-                const html = await response.text();
-
-                // 提取 body 內容 (確保只替換 body)
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const newBodyContent = doc.body.innerHTML;
-                
-                document.body.innerHTML = newBodyContent;
-                
-                // 執行新載入內容中的腳本（非常重要，因為 wel.html 有自己的計時器腳本）
-                const scripts = document.body.querySelectorAll('script');
-                scripts.forEach(script => {
-                    const newScript = document.createElement('script');
-                    if (script.src) {
-                        newScript.src = script.src;
-                    } else {
-                        newScript.textContent = script.textContent;
-                    }
-                    document.body.appendChild(newScript);
-                    script.remove(); // 移除舊的腳本標籤避免重複執行
-                });
-
-            } catch (error) {
-                document.getElementById('message').textContent = '載入歡迎頁面失敗: ' + error.message;
-                localStorage.removeItem(LOGIN_STATE_KEY);
-                history.pushState(null, '', 'login.html');
-            }
-        } else {
-            document.getElementById('message').textContent = '密碼錯誤，請重試。';
-        }
-    };
+// 如果已登入就直接跳到 wel.html
+if (isSessionValid()) {
+    loadWel();
+}
 </script>
 
 </body>
