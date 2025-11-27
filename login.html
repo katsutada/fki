@@ -2,49 +2,87 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
-    </head>
+    <title>🔒 網站登入頁面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        input[type="password"] {
+            padding: 12px;
+            margin: 15px 0;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #message {
+            color: red;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
 <body>
 
 <div class="login-box">
-    <h2>請輸入密碼</h2>
-    <input type="password" id="password" placeholder="密碼">
+    <h2>請輸入登入密碼</h2>
+    <input type="password" id="password" placeholder="密碼 (例如: mypassword123)">
     <br>
     <button onclick="checkPassword()">登入</button>
     <p id="message"></p>
 </div>
 
-<script src="config.js"></script> 
-
 <script>
-// 在這裡，我們可以直接使用 config.js 中定義的變數：
-    // CORRECT_PASSWORD 和 TARGET_PAGE
+    // 設定您的密碼和目標頁面
+    const CORRECT_PASSWORD = "mypassword123"; 
+    const TARGET_PAGE = "welcome.html";     
 
     function checkPassword() {
         const input = document.getElementById("password").value;
         const message = document.getElementById("message");
 
-        // 使用從 config.js 載入的變數
         if (input === CORRECT_PASSWORD) {
-            message.textContent = "登入成功，正在跳轉...";
-            window.location.href = TARGET_PAGE;
-        } else {
-            message.textContent = "密碼錯誤，請重新輸入。";
-            document.getElementById("password").value = ""; 
-        }
-    }
-    
-
-        if (input === correctPassword) {
-            // 💡 關鍵步驟 1：在 Session Storage 中設定一個標記
-            // key: 'isAuthenticated', value: 'true'
+            // 步驟 1: 登入成功，設定 Session Storage 標記
+            // 這個標記讓 welcome.html 知道使用者是從登入頁過來的
             sessionStorage.setItem('isAuthenticated', 'true'); 
 
             message.textContent = "登入成功，正在跳轉...";
-            window.location.href = targetPage;
+            
+            // 步驟 2: 跳轉到受保護頁面
+            // 使用 setTimeout 讓使用者看到成功訊息後再跳轉
+            setTimeout(() => {
+                 window.location.href = TARGET_PAGE;
+            }, 500);
+           
         } else {
+            // 密碼錯誤
             message.textContent = "密碼錯誤，請重新輸入。";
-            document.getElementById("password").value = ""; 
+            document.getElementById("password").value = ""; // 清空欄位
         }
     }
 </script>
