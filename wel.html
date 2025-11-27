@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+</head>
+<body>
+    <h1>歡迎來到安全頁面！</h1>
+    <p>您已成功登入。</p>
+    <button onclick="logout()">登出</button>
+
+    <script>
+        // 1. 立即檢查登入狀態和逾時
+        function checkAuthentication() {
+            const isAuthenticated = localStorage.getItem('isAuthenticated');
+            const expiryTime = localStorage.getItem('loginExpiry');
+            const currentTime = new Date().getTime();
+
+            if (isAuthenticated !== 'true' || !expiryTime || currentTime > parseInt(expiryTime)) {
+                // 登入標記不存在或已過期 (1小時閒置)
+                alert('登入已過期或無效，請重新登入。');
+                localStorage.removeItem('isAuthenticated');
+                localStorage.removeItem('loginExpiry');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 2. 註冊使用者活動監聽器 (處理閒置時間更新)
+        // 任何活動都會重置逾時時間
+        function resetIdleTimer() {
+            const newExpiryTime = new Date().getTime() + (60 * 60 * 1000); // 1小時後的毫秒數
+            localStorage.setItem('loginExpiry', newExpiryTime);
+            console.log('閒置計時器已重置。');
+        }
+
+        // 登出功能
+        function logout() {
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('loginExpiry');
+            window.location.href = 'login.html';
+        }
+
+        // 初始化
+        checkAuthentication();
+
+        // 註冊活動事件：點擊、鍵盤輸入和滑鼠移動
+        ['click', 'mousemove', 'keypress'].forEach(eventType => {
+            document.addEventListener(eventType, resetIdleTimer, true);
+        });
+
+        // 定期檢查 (例如每分鐘檢查一次，以確保即使沒有活動，超過1小時也會跳轉)
+        setInterval(checkAuthentication, 60000); // 每60秒檢查一次
+
+    </script>
+</body>
+</html>
