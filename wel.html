@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>歡迎頁面</title>
+    <script src="pw.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #e6f7ff; }
+        .welcome-container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-align: center; }
+        h1 { color: #007bff; }
+        p { color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="welcome-container">
+    <h1>🎉 歡迎回來！</h1>
+    <p>您已成功登入。本頁面閒置 30 分鐘將自動登出。</p>
+    <p id="timerMessage">計時器狀態：活動中。</p>
+</div>
+
+<script>
+    // --- 1. 防止直接瀏覽 wel.html 的檢查 ---
+    // 檢查 localStorage 中是否有登入標記
+    if (window.location.pathname.endsWith('wel.html') && localStorage.getItem(LOGIN_STATE_KEY) !== 'true') {
+        // 如果是直接訪問 wel.html 且沒有登入狀態，則強制跳轉
+        alert('未經登入，無法直接瀏覽此頁面。');
+        window.location.replace('login.html');
+    }
+    
+    // 如果是透過 login.html 載入的內容，這裡的檢查會跳過，因為此時已經有登入標記。
+
+    // --- 2. 閒置 30 分鐘後回到 login.html ---
+    const TIMEOUT_IN_MS = 30 * 60 * 1000; // 30 分鐘
+    let activityTimer;
+
+    const resetTimer = () => {
+        clearTimeout(activityTimer);
+        // 更新最近活動時間
+        localStorage.setItem(TIMEOUT_KEY, Date.now());
+        
+        // 設置新的計時器
+        activityTimer = setTimeout(logout, TIMEOUT_IN_MS);
+        
+        // 可以在這裡更新 UI 訊息
+        const timerMsg = document.getElementById('timerMessage');
+        if(timerMsg) timerMsg.textContent = '計時器狀態：活動中。閒置將於 30 分鐘後自動登出...';
+    };
+
+    const logout = () => {
+        alert('您已閒置超過 30 分鐘，將自動登出。');
+        localStorage.removeItem(LOGIN_STATE_KEY);
+        localStorage.removeItem(TIMEOUT_KEY);
+        // 無論當前網址是什麼，強制回到 login.html 並重新載入
+        window.location.replace('login.html');
+    };
+
+    // 監聽使用者活動
+    ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'].forEach(eventType => {
+        document.addEventListener(eventType, resetTimer, true);
+    });
+
+    // 啟動計時器
+    resetTimer();
+    
+    // 額外檢查：如果瀏覽器被最小化後再次打開，檢查實際經過的時間
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            const lastActivity = parseInt(localStorage.getItem(TIMEOUT_KEY), 10);
+            const now = Date.now();
+            if (now - lastActivity > TIMEOUT_IN_MS) {
+                logout();
+            } else {
+                resetTimer(); // 重新啟動計時器
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>
