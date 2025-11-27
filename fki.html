@@ -5,40 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fki</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝ -->
-    <!--  防止未登入直接訪問（新增） -->
-    <!-- ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝ -->
-    <script>
-        if (localStorage.getItem("isLogin") !== "1") {
-            location.href = "login.html";
-        }
-    </script>
-
-    <!-- ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝ -->
-    <!--  30 分鐘閒置登出（新增） -->
-    <!-- ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝ -->
-    <script>
-        let idleTimer;
-        const MAX_IDLE = 30 * 60 * 1000; // 30 分鐘
-
-        function resetIdle() {
-            clearTimeout(idleTimer);
-            idleTimer = setTimeout(function () {
-                localStorage.removeItem("isLogin");
-                alert("閒置超過 30 分鐘，已自動登出");
-                location.href = "login.html";
-            }, MAX_IDLE);
-        }
-
-        window.onload = resetIdle;
-        window.onmousemove = resetIdle;
-        window.onkeydown = resetIdle;
-        window.onmousedown = resetIdle;
-        window.ontouchstart = resetIdle;
-        window.onclick = resetIdle;
-        window.onwheel = resetIdle;
-    </script>
+	
+	<script>
+// 若未登入，導回 login.html
+if (localStorage.getItem("isLogin") !== "1") {
+    location.href = "login.html";
+}
+</script>
 
     <style>
         body {
@@ -48,6 +21,7 @@
 		input {
             border: 1px solid #bfbfbc;
 			color:#696964;
+			
         }
 		
 		select {
@@ -67,6 +41,7 @@
 		cursor: pointer;
 		padding: 1px 15px;
 		border: 1px solid #bfbfbc;
+		border-style:solid;
 		color: #696964;
 		background-color: #FFFFFF;
 		text-align: center;
@@ -80,6 +55,7 @@
 		cursor: pointer;
 		padding: 1px 20px;
 		border: 1px solid #bfbfbc;
+		border-style:solid;
 		color: #696964;
 		background-color: #FFFFFF;
 		text-align: center;
@@ -93,6 +69,7 @@
 		cursor: pointer;
 		padding: 1px 15px;
 		border: 1px solid #bfbfbc;
+		border-style:solid;
 		color: #696964;
 		background-color: #FFFFFF;
 		text-align: center;
@@ -102,26 +79,26 @@
 		background-color: #FFA07A;
 		}
 
-        .floating-button {
-          position: fixed;
-          bottom: 20px;
-          left: 20px;
-          padding: 15px 20px;
-          font-size: 16px;
-          background-color: rgba(246, 246, 246, 0.5);
-          color: #696964;
-          border: none;
-          border-radius: 50%;
-          box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-          cursor: pointer;
-          z-index: 9999;
-          transition: background-color 0.3s;
-          display: none;
-        }
+    .floating-button {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      padding: 15px 20px;
+      font-size: 16px;
+      background-color: rgba(246, 246, 246, 0.5);
+      color: #696964;
+      border: none;
+      border-radius: 50%;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      z-index: 9999;
+      transition: background-color 0.3s;
+      display: none;
+    }
 
-        .floating-button:hover {
-          background-color: rgba(253, 255, 121, 0.8);
-        }
+    .floating-button:hover {
+      background-color: rgba(253, 255, 121, 0.8);
+    }
 
         #progress-bar {
             width: 0;
@@ -129,33 +106,28 @@
             background-color:#dddddd;
             display: none;
         }
-
         .highlight {
             background-color: #fdff79;
         }
-
         #results {
             margin-top: 10px;
             border-collapse: collapse;
             width: 100%;
         }
-
         #results th, #results td {
             border: 1px solid #ddd;
             padding: 8px;
 			font-size: 16px;
         }
-
         #results th {
             background-color: #ffffff;
 			font-size: 16px;
         }
+			 
     </style>
 </head>
 <body>
-
 <button class="floating-button" onclick="scrollToTop()">T O P</button>
-
 <table>
 <tr align="center" valign="middle">
 <td>
@@ -191,12 +163,12 @@
 </td>
 <tr>
 <td></td><td></td><td></td>
-<td><div id="progress-bar"></div></td>
+<td>
+	<div id="progress-bar"></div>
+</td>
 </tr>
 </table>
-
 <table id="results"></table>
-
 <script>
     const API_KEY = "AIzaSyCPIdNjv__lM-xSq5oMP4VQggmuMLTXS_0";
     let SPREADSHEET_ID = "12puXwzzkmvIL7UxGkzLX2PLHOLWaatGyTuWH8LDbYBM";
@@ -251,17 +223,13 @@
             let filteredRows;
 
             if (columnIndex === "ALL") {
-                filteredRows = rows.slice(1).filter(row =>
-                    query.split(" ").every(keyword =>
-                        row.some(cell => cell && cell.includes(keyword))
-                    )
-                );
+                filteredRows = rows.slice(1).filter(row => {
+                    return query.split(" ").every(keyword => row.some(cell => cell && cell.includes(keyword)));
+                });
             } else {
-                filteredRows = rows.slice(1).filter(row =>
-                    query.split(" ").every(keyword =>
-                        row[columnIndex] && row[columnIndex].includes(keyword)
-                    )
-                );
+                filteredRows = rows.slice(1).filter(row => {
+                    return query.split(" ").every(keyword => row[columnIndex] && row[columnIndex].includes(keyword));
+                });
             }
 
             if (limit > 0) {
@@ -304,3 +272,83 @@
     }
 
     $(document).ready(function () {
+
+        fetchSheetNames();
+
+        $("#spreadsheet-select").change(function () {
+            const selectedValue = $(this).val();
+            if (selectedValue === "custom") {
+                $("#custom-spreadsheet-id").show();
+            } else {
+                $("#custom-spreadsheet-id").hide();
+                SPREADSHEET_ID = selectedValue;
+                fetchSheetNames();
+            }
+        });
+
+        $("#load-spreadsheet").click(function () {
+            if ($("#spreadsheet-select").val() === "custom") {
+                const customId = $("#custom-spreadsheet-id").val().trim();
+                if (customId) {
+                    SPREADSHEET_ID = customId;
+                    fetchSheetNames();
+                } else {
+                    alert("請輸入試算表ID");
+                }
+            }
+        });
+
+        $("#sheet-select").change(function () {
+            const sheetName = $(this).val();
+            if (sheetName) {
+                fetchHeaders(sheetName);
+            }
+        });
+
+        $("#search-all").click(function () {
+            const query = $("#query").val().trim();
+            const sheetName = $("#sheet-select").val();
+            const columnIndex = $("#column-select").val();
+            if (query && sheetName) {
+                fetchData(query, sheetName, columnIndex);
+            } else {
+                alert("No input text");
+            }
+        });
+
+        $("#search-50").click(function () {
+            const query = $("#query").val().trim();
+            const sheetName = $("#sheet-select").val();
+            const columnIndex = $("#column-select").val();
+            if (query && sheetName) {
+                fetchData(query, sheetName, columnIndex, 15);
+            } else {
+                alert("No input text");
+            }
+        });
+
+        $("#clear").click(function () {
+            $("#query").val("");
+            $("#results").empty();
+        });
+    });
+
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    window.onscroll = function() {
+      var button = document.querySelector('.floating-button');
+      
+      if (window.scrollY === 0) {
+        button.style.display = 'none';
+      } else {
+        button.style.display = 'block';
+      }
+    }
+</script>
+</body>
+</html>
