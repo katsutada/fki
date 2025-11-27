@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    </head>
+<body>
+
+<div class="login-box">
+    <h2>請輸入密碼</h2>
+    <input type="password" id="password" placeholder="密碼">
+    <br>
+    <button onclick="checkPassword()">登入</button>
+    <p id="message"></p>
+</div>
+
+<script src="config.js"></script> 
+
+<script>
+    // 假設您已經定義了 CORRECT_PASSWORD 和 TARGET_PAGE
+    const correctPassword = "mypassword123"; 
+    const targetPage = "welcome.html";     
+    
+    function checkPassword() {
+        const input = document.getElementById("password").value;
+        const message = document.getElementById("message");
+
+        if (input === correctPassword) {
+            // 💡 關鍵步驟 1：在 Session Storage 中設定一個標記
+            // key: 'isAuthenticated', value: 'true'
+            sessionStorage.setItem('isAuthenticated', 'true'); 
+
+            message.textContent = "登入成功，正在跳轉...";
+            window.location.href = targetPage;
+        } else {
+            message.textContent = "密碼錯誤，請重新輸入。";
+            document.getElementById("password").value = ""; 
+        }
+    }
+</script>
+
+</body>
+</html>
