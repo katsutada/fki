@@ -5,37 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fki</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	
-<script>
-// 若未登入，導回 login.html
-if (localStorage.getItem("isLogin") !== "1") {
-	location.href = "login.html";
-}
-</script>
-
-<script>
-let idleTimer;
-const MAX_IDLE = 30 * 60 * 1000; // 30 min
-
-function resetTimer() {
-    clearTimeout(idleTimer);
-    idleTimer = setTimeout(logout, MAX_IDLE);
-}
-
-function logout() {
-    localStorage.removeItem("isLogin");
-    alert("閒置超過 30 分鐘，已登出");
-    location.href = "login.html";
-}
-
-function logout() {
-    localStorage.removeItem("isLogin");
-    alert("已登出");
-    location.href = "login.html";
-}
-</script>
-
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,7 +13,6 @@ function logout() {
 		input {
             border: 1px solid #bfbfbc;
 			color:#696964;
-			
         }
 		
 		select {
@@ -64,7 +32,6 @@ function logout() {
 		cursor: pointer;
 		padding: 1px 15px;
 		border: 1px solid #bfbfbc;
-		border-style:solid;
 		color: #696964;
 		background-color: #FFFFFF;
 		text-align: center;
@@ -78,7 +45,6 @@ function logout() {
 		cursor: pointer;
 		padding: 1px 20px;
 		border: 1px solid #bfbfbc;
-		border-style:solid;
 		color: #696964;
 		background-color: #FFFFFF;
 		text-align: center;
@@ -92,7 +58,6 @@ function logout() {
 		cursor: pointer;
 		padding: 1px 15px;
 		border: 1px solid #bfbfbc;
-		border-style:solid;
 		color: #696964;
 		background-color: #FFFFFF;
 		text-align: center;
@@ -150,9 +115,7 @@ function logout() {
     </style>
 </head>
 <body>
-
 <button class="floating-button" onclick="scrollToTop()">T O P</button>
-
 <table>
 <tr align="center" valign="middle">
 <td>
@@ -185,7 +148,7 @@ function logout() {
 	<button id="search-50" class="btn1color">Quick</button>
     <button id="search-all" class="btn2color">Full</button>    
     <button id="clear" class="btn3color">Clean</button>
-	<button onclick="logout()" style="padding:5px 10px;">Logout</button>
+    <button id="logout" class="btn3color">Logout</button>
 </td>
 <tr>
 <td></td><td></td><td></td>
@@ -194,7 +157,6 @@ function logout() {
 </td>
 </tr>
 </table>
-
 <table id="results"></table>
 <script>
     const API_KEY = "AIzaSyCPIdNjv__lM-xSq5oMP4VQggmuMLTXS_0";
@@ -357,6 +319,11 @@ function logout() {
         $("#clear").click(function () {
             $("#query").val("");
             $("#results").empty();
+        });
+
+        // ★ 新增 Logout 功能
+        $("#logout").click(function () {
+            location.reload();  
         });
     });
 
