@@ -17,13 +17,23 @@
 <script src="config.js"></script> 
 
 <script>
-    // 假設您已經定義了 CORRECT_PASSWORD 和 TARGET_PAGE
-    const correctPassword = "mypassword123"; 
-    const targetPage = "welcome.html";     
-    
+// 在這裡，我們可以直接使用 config.js 中定義的變數：
+    // CORRECT_PASSWORD 和 TARGET_PAGE
+
     function checkPassword() {
         const input = document.getElementById("password").value;
         const message = document.getElementById("message");
+
+        // 使用從 config.js 載入的變數
+        if (input === CORRECT_PASSWORD) {
+            message.textContent = "登入成功，正在跳轉...";
+            window.location.href = TARGET_PAGE;
+        } else {
+            message.textContent = "密碼錯誤，請重新輸入。";
+            document.getElementById("password").value = ""; 
+        }
+    }
+    
 
         if (input === correctPassword) {
             // 💡 關鍵步驟 1：在 Session Storage 中設定一個標記
