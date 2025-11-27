@@ -3,49 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>🔒 網站登入頁面</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
-        .login-box {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-        input[type="password"] {
-            padding: 12px;
-            margin: 15px 0;
-            width: 250px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        button {
-            padding: 12px 25px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #message {
-            color: red;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-    </style>
+    <script src="config.js"></script> 
+
 </head>
 <body>
 
@@ -58,31 +17,25 @@
 </div>
 
 <script>
-    // 設定您的密碼和目標頁面
-    const CORRECT_PASSWORD = "mypassword123"; 
-    const TARGET_PAGE = "welcome.html";     
+    // 這裡可以直接使用 config.js 中定義的 CORRECT_PASSWORD, TARGET_PAGE, AUTH_KEY 等變數
 
     function checkPassword() {
         const input = document.getElementById("password").value;
         const message = document.getElementById("message");
 
         if (input === CORRECT_PASSWORD) {
-            // 步驟 1: 登入成功，設定 Session Storage 標記
-            // 這個標記讓 welcome.html 知道使用者是從登入頁過來的
-            sessionStorage.setItem('isAuthenticated', 'true'); 
+            // 設定 Session Storage 標記，使用 AUTH_KEY
+            sessionStorage.setItem(AUTH_KEY, 'true'); 
 
             message.textContent = "登入成功，正在跳轉...";
             
-            // 步驟 2: 跳轉到受保護頁面
-            // 使用 setTimeout 讓使用者看到成功訊息後再跳轉
             setTimeout(() => {
                  window.location.href = TARGET_PAGE;
             }, 500);
            
         } else {
-            // 密碼錯誤
             message.textContent = "密碼錯誤，請重新輸入。";
-            document.getElementById("password").value = ""; // 清空欄位
+            document.getElementById("password").value = ""; 
         }
     }
 </script>
