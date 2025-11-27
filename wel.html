@@ -1,10 +1,231 @@
 <!-- 不要放 <html> 或 <body>，因為是插入 login.html 的 div -->
 
-<h1>歡迎登入！</h1>
-<p>這裡是保護頁面。</p>
 <button onclick="logout()">登出</button>
 
+<button class="floating-button" onclick="scrollToTop()">T O P</button>
+<table>
+<tr align="center" valign="middle">
+<td>
+    <select id="spreadsheet-select">
+    <option value="12puXwzzkmvIL7UxGkzLX2PLHOLWaatGyTuWH8LDbYBM">TCCG</option>
+    <option value="1-QEJMXdCgOrxEXi_4e3AyQRr_KnxhYZTGBv1i3XV_Zc">TYCG</option>
+	<option value="18IuWygHpQBPagFWDiMX_p2dkqs_qUHsiYcQ4AAS3zD8">YILAN</option>
+	<option value="1j1IbV2gBPA7wQy_KwZAE3Ly0pqPT4EZSwRAL5XKHNh4">CHCG</option>
+	<option value="1aiYSzIpyde7pWPEU5yFu2-JmwvUMRfQjSJJqsZcDnsA">KINMEN</option>
+	<option value="1y0UVJYVxtP5PLnB3ERVy9Hn896Z668Snjk1xv5SQtUs">NANTOU</option>
+	<option value="1yF-dxb-9I_nB0S-Qg0ZT1rJFtoZcRg0c8JcKPLeNmQI">CYHG2</option>
+	<option value="1-vsDvUuQwhWx7Ulrb8FX7dKxAMakKYuhE9KCkginmKY">MATSU</option>
+	<option value="1p0-cqblflBuZO4COYRWS0pn3WwtZKuw-wlTWc6d-5i0">FKI</option>
+	<option value="1ZGagdgNJXS0TbYcW5-CjsC5_HQGNWHPdblIF_xiMc68">HL</option>
+	<option value="1ia6Y7SH1cTIRKHHuz9YgCAgv6A4PL01BGuQZFMqdTzs">TH</option>
+	<option value="1fF_iiB4VoH1t3hHLXteVlTdoYzz6uWzBmjlAS2rJfOk">TYMETRO</option>
+	<option value="1KvTadcU-8opqLsNidOzAJJ0iPvZcBgj_k9rCQPWJACI">ILRDF</option>
+	<option value="1KrR-uaqhxJRJhtW0OEph4AR5CIgq01zJiDXrA2uoD3o">TAI</option>
+</td>
+<td>
+<select id="sheet-select"></select>
+</td>
+<td>
+<select id="column-select">
+	<option value="ALL">ALL</option>
+</select>
+</td>
+<td>
+    <input type="text" size="40" id="query">
+	<button id="search-50" class="btn1color">Quick</button>
+    <button id="search-all" class="btn2color">Full</button>    
+    <button id="clear" class="btn3color">Clean</button>
+</td>
+<tr>
+<td></td><td></td><td></td>
+<td>
+	<div id="progress-bar"></div>
+</td>
+</tr>
+</table>
+<table id="results"></table>
 <script>
+    const API_KEY = "AIzaSyCPIdNjv__lM-xSq5oMP4VQggmuMLTXS_0";
+    let SPREADSHEET_ID = "12puXwzzkmvIL7UxGkzLX2PLHOLWaatGyTuWH8LDbYBM";
+
+    function showProgressBar() {
+        $("#progress-bar").css("width", "0").show().animate({ width: "100%" }, 1000);
+    }
+
+    function hideProgressBar() {
+        $("#progress-bar").stop().hide();
+    }
+
+    function fetchSheetNames() {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?fields=sheets.properties.title&key=${API_KEY}`;
+        $.getJSON(url, function (data) {
+            const sheets = data.sheets.map(sheet => sheet.properties.title);
+            const select = $("#sheet-select");
+            select.empty();
+            sheets.forEach(sheet => {
+                select.append(new Option(sheet, sheet));
+            });
+            if (sheets.length > 0) {
+                fetchHeaders(sheets[0]);
+            }
+        }).fail(function () {
+            alert("無法取得資料");
+        });
+    }
+
+    function fetchHeaders(sheetName) {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${sheetName}!1:1?key=${API_KEY}`;
+        $.getJSON(url, function (data) {
+            const headers = data.values[0];
+            const select = $("#column-select");
+            select.empty();
+            select.append(new Option("ALL", "ALL"));
+            headers.forEach((header, index) => {
+                select.append(new Option(header, index));
+            });
+        }).fail(function () {
+            alert("無法取得資料");
+        });
+    }
+
+    function fetchData(query, sheetName, columnIndex, limit = 0) {
+        showProgressBar();
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${sheetName}?key=${API_KEY}`;
+        $.getJSON(url, function (data) {
+            hideProgressBar();
+            const rows = data.values || [];
+            const headers = rows[0];
+            let filteredRows;
+
+            if (columnIndex === "ALL") {
+                filteredRows = rows.slice(1).filter(row => {
+                    return query.split(" ").every(keyword => row.some(cell => cell && cell.includes(keyword)));
+                });
+            } else {
+                filteredRows = rows.slice(1).filter(row => {
+                    return query.split(" ").every(keyword => row[columnIndex] && row[columnIndex].includes(keyword));
+                });
+            }
+
+            if (limit > 0) {
+                filteredRows.splice(limit);
+            }
+
+            displayResults(headers, filteredRows, query, columnIndex);
+        }).fail(function () {
+            hideProgressBar();
+            alert("無法取得資料");
+        });
+    }
+
+    function displayResults(headers, rows, query, columnIndex) {
+        const table = $("#results");
+        table.empty();
+
+        const headerRow = $("<tr></tr>");
+        headers.forEach(header => {
+            headerRow.append($("<th></th>").text(header));
+        });
+        table.append(headerRow);
+
+        rows.forEach(row => {
+            const dataRow = $("<tr></tr>");
+            row.forEach((cell, index) => {
+                const highlightedCell = cell
+                    ? query.split(" ").reduce((text, keyword) => {
+                        if (columnIndex === "ALL" || columnIndex == index) {
+                            const regex = new RegExp(`(${keyword})`, "gi");
+                            return text.replace(regex, '<span class="highlight">$1</span>');
+                        }
+                        return text;
+                    }, cell)
+                    : "";
+                dataRow.append($("<td></td>").html(highlightedCell));
+            });
+            table.append(dataRow);
+        });
+    }
+
+    $(document).ready(function () {
+
+        fetchSheetNames();
+
+        $("#spreadsheet-select").change(function () {
+            const selectedValue = $(this).val();
+            if (selectedValue === "custom") {
+                $("#custom-spreadsheet-id").show();
+            } else {
+                $("#custom-spreadsheet-id").hide();
+                SPREADSHEET_ID = selectedValue;
+                fetchSheetNames();
+            }
+        });
+
+        $("#load-spreadsheet").click(function () {
+            if ($("#spreadsheet-select").val() === "custom") {
+                const customId = $("#custom-spreadsheet-id").val().trim();
+                if (customId) {
+                    SPREADSHEET_ID = customId;
+                    fetchSheetNames();
+                } else {
+                    alert("請輸入試算表ID");
+                }
+            }
+        });
+
+        $("#sheet-select").change(function () {
+            const sheetName = $(this).val();
+            if (sheetName) {
+                fetchHeaders(sheetName);
+            }
+        });
+
+        $("#search-all").click(function () {
+            const query = $("#query").val().trim();
+            const sheetName = $("#sheet-select").val();
+            const columnIndex = $("#column-select").val();
+            if (query && sheetName) {
+                fetchData(query, sheetName, columnIndex);
+            } else {
+                alert("No input text");
+            }
+        });
+
+        $("#search-50").click(function () {
+            const query = $("#query").val().trim();
+            const sheetName = $("#sheet-select").val();
+            const columnIndex = $("#column-select").val();
+            if (query && sheetName) {
+                fetchData(query, sheetName, columnIndex, 15);
+            } else {
+                alert("No input text");
+            }
+        });
+
+        $("#clear").click(function () {
+            $("#query").val("");
+            $("#results").empty();
+        });
+    });
+
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    window.onscroll = function() {
+      var button = document.querySelector('.floating-button');
+      
+      if (window.scrollY === 0) {
+        button.style.display = 'none';
+      } else {
+        button.style.display = 'block';
+      }
+    }
+
+
 if (!isSessionValid()) {
     logout(); // 強制跳回 login
 }
