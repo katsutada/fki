@@ -5,42 +5,37 @@
 <title>Login</title>
 <script src="pw.js"></script>
 <style>
-    body { font-family: Arial; padding: 40px; }
-    #error { color: red; margin-top: 10px; }
-    input { padding: 5px; }
-    button { padding: 5px 10px; }
+body { font-family: Arial; margin: 30px; }
+input { padding: 5px; }
+#error { color: red; margin-top: 10px; }
+button { padding: 5px 15px; cursor: pointer; }
 </style>
 </head>
 <body>
 
-<h3>請輸入密碼</h3>
-<input type="password" id="pw" />
-<button onclick="login()">Enter</button>
+<h2>請輸入密碼</h2>
+
+<input type="password" id="pwInput" placeholder="請輸入密碼">
+<button onclick="login()">登入</button>
+
 <div id="error"></div>
-
-<hr>
-
-<div id="app"></div>
 
 <script>
 function login() {
-    const input = document.getElementById("pw").value;
+    const input = document.getElementById("pwInput").value.trim();
 
     if (input === PASSWORD) {
-        document.getElementById("error").innerText = "";
-        loadFki();
+        sessionStorage.setItem("isLogin", "1");
+        sessionStorage.setItem("lastActive", Date.now());
+        window.location.href = "fki.html";
     } else {
-        document.getElementById("error").innerText = "密碼錯誤！";
+        document.getElementById("error").textContent = "密碼錯誤";
     }
 }
 
-function loadFki() {
-    fetch("fki.html")
-        .then(res => res.text())
-        .then(html => {
-            document.getElementById("app").innerHTML = html;
-        });
-}
+document.body.addEventListener("click", () => {
+    sessionStorage.setItem("lastActive", Date.now());
+});
 </script>
 
 </body>
