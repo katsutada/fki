@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Login</title>
@@ -9,14 +9,29 @@ body { font-family: Arial; margin: 30px; }
 input { padding: 5px; }
 #error { color: red; margin-top: 10px; }
 button { padding: 5px 15px; cursor: pointer; }
+
+		.btn1color {		
+		cursor: pointer;
+		padding: 1px 15px;
+		border: 1px solid #bfbfbc;
+		border-style:solid;
+		color: #696964;
+		background-color: #FFFFFF;
+		text-align: center;
+		transition: background-color 0.3s ease;
+		}
+		.btn1color:hover {
+		background-color: #AFEEEE;
+		}
+		
 </style>
 </head>
 <body>
 
-<h2>請輸入密碼</h2>
-
-<input type="password" id="pwInput" placeholder="請輸入密碼">
-<button onclick="login()">登入</button>
+<input type="password" id="pwInput" placeholder="" style="width:10%; height:5px; padding:6px 10px;">
+<button onclick="login()" class="btn1color">Login</button>
+<p>
+<font color="#AAAAAA">2025.11.27 新增登入及登出功能 密碼7397 </font>
 
 <div id="error"></div>
 
