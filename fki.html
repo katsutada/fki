@@ -351,7 +351,7 @@ function checkSession() {
     const lastActive = sessionStorage.getItem("lastActive");
 
     if (!isLogin) {
-        window.location.href = "login.html";
+        window.location.href = "https://katsutada.github.io/fki/";
         return;
     }
 
@@ -359,7 +359,7 @@ function checkSession() {
     if (lastActive && now - lastActive > 1800000) {
         sessionStorage.removeItem("isLogin");
         alert("已閒置 30 分鐘，自動登出");
-        window.location.href = "login.html";
+        window.location.href = "https://katsutada.github.io/fki/";
         return;
     }
     sessionStorage.setItem("lastActive", now);
@@ -375,7 +375,7 @@ document.body.addEventListener("click", () => {
 document.getElementById("logoutBtn").addEventListener("click", () => {
     sessionStorage.removeItem("isLogin");
     sessionStorage.removeItem("lastActive");
-    window.location.href = "login.html";
+    window.location.href = "https://katsutada.github.io/fki/";
 });
 </script>
 </body>
