@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<script src="pw.js"></script>
+</head>
+<body>
+
+<div id="login-box">
+  <input type="password" id="pw" placeholder="請輸入密碼">
+  <button onclick="login()">登入</button>
+</div>
+
+<!-- fki.html 載入區 -->
+<iframe id="secure-frame" style="width:100%;height:100vh;border:none;display:none;"></iframe>
+
+<script>
+// 若已登入，直接載入 fki（網址不變）
+if (localStorage.getItem("isLogin") === "1") {
+    loadFki();
+}
+
+function login() {
+    const input = document.getElementById("pw").value;
+    if (input === PASSWORD) {
+        localStorage.setItem("isLogin", "1");
+        loadFki();
+    } else {
+        alert("密碼錯誤");
+    }
+}
+
+function loadFki() {
+    document.getElementById("login-box").style.display = "none";
+    const frame = document.getElementById("secure-frame");
+    frame.style.display = "block";
+    frame.src = "fki.html"; // URL 不會改變
+}
+</script>
+
+</body>
+</html>

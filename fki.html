@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fki</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝ -->
+    <!--  防止未登入直接訪問（新增） -->
+    <!-- ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝ -->
+    <script>
+        if (localStorage.getItem("isLogin") !== "1") {
+            location.href = "login.html";
+        }
+    </script>
+
+    <!-- ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝ -->
+    <!--  30 分鐘閒置登出（新增） -->
+    <!-- ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝ -->
+    <script>
+        let idleTimer;
+        const MAX_IDLE = 30 * 60 * 1000; // 30 分鐘
+
+        function resetIdle() {
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(function () {
+                localStorage.removeItem("isLogin");
+                alert("閒置超過 30 分鐘，已自動登出");
+                location.href = "login.html";
+            }, MAX_IDLE);
+        }
+
+        window.onload = resetIdle;
+        window.onmousemove = resetIdle;
+        window.onkeydown = resetIdle;
+        window.onmousedown = resetIdle;
+        window.ontouchstart = resetIdle;
+        window.onclick = resetIdle;
+        window.onwheel = resetIdle;
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+		
+		input {
+            border: 1px solid #bfbfbc;
+			color:#696964;
+        }
+		
+		select {
+            border: 1px solid #bfbfbc;
+            color: #696964;
+			text-align:left;
+			padding: 1px 10px;
+            border-radius: 5px;
+        }
+		
+		select:focus {
+            border-color:#0079f0;
+            outline: none;
+        }
+		
+		.btn1color {		
+		cursor: pointer;
+		padding: 1px 15px;
+		border: 1px solid #bfbfbc;
+		color: #696964;
+		background-color: #FFFFFF;
+		text-align: center;
+		transition: background-color 0.3s ease;
+		}
+		.btn1color:hover {
+		background-color: #AFEEEE;
+		}
+		
+		.btn2color {
+		cursor: pointer;
+		padding: 1px 20px;
+		border: 1px solid #bfbfbc;
+		color: #696964;
+		background-color: #FFFFFF;
+		text-align: center;
+		transition: background-color 0.3s ease;
+		}
+		.btn2color:hover {
+		background-color: #FFFF00;
+		}
+
+		.btn3color {
+		cursor: pointer;
+		padding: 1px 15px;
+		border: 1px solid #bfbfbc;
+		color: #696964;
+		background-color: #FFFFFF;
+		text-align: center;
+		transition: background-color 0.3s ease;
+		}
+		.btn3color:hover {
+		background-color: #FFA07A;
+		}
+
+        .floating-button {
+          position: fixed;
+          bottom: 20px;
+          left: 20px;
+          padding: 15px 20px;
+          font-size: 16px;
+          background-color: rgba(246, 246, 246, 0.5);
+          color: #696964;
+          border: none;
+          border-radius: 50%;
+          box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+          cursor: pointer;
+          z-index: 9999;
+          transition: background-color 0.3s;
+          display: none;
+        }
+
+        .floating-button:hover {
+          background-color: rgba(253, 255, 121, 0.8);
+        }
+
+        #progress-bar {
+            width: 0;
+            height: 8px;
+            background-color:#dddddd;
+            display: none;
+        }
+
+        .highlight {
+            background-color: #fdff79;
+        }
+
+        #results {
+            margin-top: 10px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #results th, #results td {
+            border: 1px solid #ddd;
+            padding: 8px;
+			font-size: 16px;
+        }
+
+        #results th {
+            background-color: #ffffff;
+			font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<button class="floating-button" onclick="scrollToTop()">T O P</button>
+
+<table>
+<tr align="center" valign="middle">
+<td>
+    <select id="spreadsheet-select">
+    <option value="12puXwzzkmvIL7UxGkzLX2PLHOLWaatGyTuWH8LDbYBM">TCCG</option>
+    <option value="1-QEJMXdCgOrxEXi_4e3AyQRr_KnxhYZTGBv1i3XV_Zc">TYCG</option>
+	<option value="18IuWygHpQBPagFWDiMX_p2dkqs_qUHsiYcQ4AAS3zD8">YILAN</option>
+	<option value="1j1IbV2gBPA7wQy_KwZAE3Ly0pqPT4EZSwRAL5XKHNh4">CHCG</option>
+	<option value="1aiYSzIpyde7pWPEU5yFu2-JmwvUMRfQjSJJqsZcDnsA">KINMEN</option>
+	<option value="1y0UVJYVxtP5PLnB3ERVy9Hn896Z668Snjk1xv5SQtUs">NANTOU</option>
+	<option value="1yF-dxb-9I_nB0S-Qg0ZT1rJFtoZcRg0c8JcKPLeNmQI">CYHG2</option>
+	<option value="1-vsDvUuQwhWx7Ulrb8FX7dKxAMakKYuhE9KCkginmKY">MATSU</option>
+	<option value="1p0-cqblflBuZO4COYRWS0pn3WwtZKuw-wlTWc6d-5i0">FKI</option>
+	<option value="1ZGagdgNJXS0TbYcW5-CjsC5_HQGNWHPdblIF_xiMc68">HL</option>
+	<option value="1ia6Y7SH1cTIRKHHuz9YgCAgv6A4PL01BGuQZFMqdTzs">TH</option>
+	<option value="1fF_iiB4VoH1t3hHLXteVlTdoYzz6uWzBmjlAS2rJfOk">TYMETRO</option>
+	<option value="1KvTadcU-8opqLsNidOzAJJ0iPvZcBgj_k9rCQPWJACI">ILRDF</option>
+	<option value="1KrR-uaqhxJRJhtW0OEph4AR5CIgq01zJiDXrA2uoD3o">TAI</option>
+</td>
+<td>
+<select id="sheet-select"></select>
+</td>
+<td>
+<select id="column-select">
+	<option value="ALL">ALL</option>
+</select>
+</td>
+<td>
+    <input type="text" size="40" id="query">
+	<button id="search-50" class="btn1color">Quick</button>
+    <button id="search-all" class="btn2color">Full</button>    
+    <button id="clear" class="btn3color">Clean</button>
+</td>
+<tr>
+<td></td><td></td><td></td>
+<td><div id="progress-bar"></div></td>
+</tr>
+</table>
+
+<table id="results"></table>
+
+<script>
+    const API_KEY = "AIzaSyCPIdNjv__lM-xSq5oMP4VQggmuMLTXS_0";
+    let SPREADSHEET_ID = "12puXwzzkmvIL7UxGkzLX2PLHOLWaatGyTuWH8LDbYBM";
+
+    function showProgressBar() {
+        $("#progress-bar").css("width", "0").show().animate({ width: "100%" }, 1000);
+    }
+
+    function hideProgressBar() {
+        $("#progress-bar").stop().hide();
+    }
+
+    function fetchSheetNames() {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?fields=sheets.properties.title&key=${API_KEY}`;
+        $.getJSON(url, function (data) {
+            const sheets = data.sheets.map(sheet => sheet.properties.title);
+            const select = $("#sheet-select");
+            select.empty();
+            sheets.forEach(sheet => {
+                select.append(new Option(sheet, sheet));
+            });
+            if (sheets.length > 0) {
+                fetchHeaders(sheets[0]);
+            }
+        }).fail(function () {
+            alert("無法取得資料");
+        });
+    }
+
+    function fetchHeaders(sheetName) {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${sheetName}!1:1?key=${API_KEY}`;
+        $.getJSON(url, function (data) {
+            const headers = data.values[0];
+            const select = $("#column-select");
+            select.empty();
+            select.append(new Option("ALL", "ALL"));
+            headers.forEach((header, index) => {
+                select.append(new Option(header, index));
+            });
+        }).fail(function () {
+            alert("無法取得資料");
+        });
+    }
+
+    function fetchData(query, sheetName, columnIndex, limit = 0) {
+        showProgressBar();
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${sheetName}?key=${API_KEY}`;
+        $.getJSON(url, function (data) {
+            hideProgressBar();
+            const rows = data.values || [];
+            const headers = rows[0];
+            let filteredRows;
+
+            if (columnIndex === "ALL") {
+                filteredRows = rows.slice(1).filter(row =>
+                    query.split(" ").every(keyword =>
+                        row.some(cell => cell && cell.includes(keyword))
+                    )
+                );
+            } else {
+                filteredRows = rows.slice(1).filter(row =>
+                    query.split(" ").every(keyword =>
+                        row[columnIndex] && row[columnIndex].includes(keyword)
+                    )
+                );
+            }
+
+            if (limit > 0) {
+                filteredRows.splice(limit);
+            }
+
+            displayResults(headers, filteredRows, query, columnIndex);
+        }).fail(function () {
+            hideProgressBar();
+            alert("無法取得資料");
+        });
+    }
+
+    function displayResults(headers, rows, query, columnIndex) {
+        const table = $("#results");
+        table.empty();
+
+        const headerRow = $("<tr></tr>");
+        headers.forEach(header => {
+            headerRow.append($("<th></th>").text(header));
+        });
+        table.append(headerRow);
+
+        rows.forEach(row => {
+            const dataRow = $("<tr></tr>");
+            row.forEach((cell, index) => {
+                const highlightedCell = cell
+                    ? query.split(" ").reduce((text, keyword) => {
+                        if (columnIndex === "ALL" || columnIndex == index) {
+                            const regex = new RegExp(`(${keyword})`, "gi");
+                            return text.replace(regex, '<span class="highlight">$1</span>');
+                        }
+                        return text;
+                    }, cell)
+                    : "";
+                dataRow.append($("<td></td>").html(highlightedCell));
+            });
+            table.append(dataRow);
+        });
+    }
+
+    $(document).ready(function () {
