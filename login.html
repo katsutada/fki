@@ -120,8 +120,8 @@
                 appContent.innerHTML = htmlContent;
                 
                 // 2. 使用 History API 更改 URL
-                // 網址會變為 /welcome，但頁面沒有刷新，從而避免顯示 .html 檔案名
-                history.pushState({ page: 'welcome' }, 'Welcome', APP_BASE_URL + 'welcome');
+                // 網址會變為 /search，但頁面沒有刷新，從而避免顯示 .html 檔案名
+                history.pushState({ page: 'search' }, 'search', APP_BASE_URL + 'search');
 
                 // 3. 啟動閒置監控
                 startIdleMonitoring();
