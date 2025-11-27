@@ -6,12 +6,34 @@
     <title>Fki</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	
-	<script>
+<script>
 // 若未登入，導回 login.html
 if (localStorage.getItem("isLogin") !== "1") {
-    location.href = "login.html";
+	location.href = "login.html";
 }
 </script>
+
+<script>
+let idleTimer;
+const MAX_IDLE = 30 * 60 * 1000; // 30 min
+
+function resetTimer() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(logout, MAX_IDLE);
+}
+
+function logout() {
+    localStorage.removeItem("isLogin");
+    alert("閒置超過 30 分鐘，已登出");
+    location.href = "login.html";
+}
+
+// 任何操作都重置
+window.onload = resetTimer;
+window.onmousemove = resetTimer;
+window.onkeydown = resetTimer;
+</script>
+
 
     <style>
         body {
