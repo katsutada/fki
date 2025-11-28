@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>FKI</title>
+    <title>Search Central</title>
 	
 <style>
 body { font-family: Arial; margin: 30px; }
@@ -30,8 +30,7 @@ button { padding: 5px 15px; cursor: pointer; }
 <body>
 
     <input type="password" id="passwordInput" style="width:10%; height:5px; padding:6px 10px;">
-    <button onclick="login()" class="btn1color">Login</button><br>
-	<font color="#AAAAAA">2025.11.27 新增登入及登出功能 密碼7397</font><br>
+    <button onclick="login()" class="btn1color">Go</button>
 	<p id="message" style="color:#AAAAAA; font-size: 16px;"></p>
 
 
@@ -43,14 +42,14 @@ button { padding: 5px 15px; cursor: pointer; }
             const messageElement = document.getElementById('message');
 
             if (!password) {
-                messageElement.textContent = '請輸入密碼！';
+                messageElement.textContent = '↑↑↑';
                 return;
             }
 
             const formData = new FormData();
             formData.append('password', password); 
 
-            messageElement.textContent = '驗證中...';
+            messageElement.textContent = 'Loading...';
 
             try {
                 const response = await fetch(GAS_WEB_APP_URL, {
@@ -61,18 +60,18 @@ button { padding: 5px 15px; cursor: pointer; }
                 const result = await response.json();
 
                 if (result.success) {
-                    messageElement.textContent = '登入成功！正在導向...';
+                    messageElement.textContent = 'Go !';
 					sessionStorage.setItem("isLogin", "1");
 					sessionStorage.setItem("lastActive", Date.now());
                     window.location.href = result.redirect; 
                 } else {
 
-                    messageElement.textContent = result.message || '登入失敗，請檢查密碼。';
+                    messageElement.textContent = result.message || 'Retry';
                 }
 
             } catch (error) {
                 console.error('Fetch 錯誤:', error);
-                messageElement.textContent = '連線錯誤，請稍後再試。';
+                messageElement.textContent = 'Network error';
             }
         }
 
